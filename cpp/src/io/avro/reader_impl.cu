@@ -307,7 +307,12 @@ rmm::device_buffer decompress_data(datasource& source,
                                                 scratch.size(),
                                                 uncompressed_data_ptrs.data(),
                                                 statuses.data(),
+#if defined(CUDA_API_PER_THREAD_DEFAULT_STREAM)
+                                                (stream == rmm::cuda_stream_default) ?
+                                                  rmm::cuda_stream_per_thread : stream);
+#else
                                                 stream);
+#endif
     CUDF_EXPECTS(status == nvcompStatus_t::nvcompSuccess, "unable to perform snappy decompression");
 
     CUDF_EXPECTS(thrust::equal(rmm::exec_policy(stream),

@@ -1186,7 +1186,12 @@ rmm::device_buffer reader::impl::decompress_page_data(
                                      d_comp_out,
                                      d_comp_stats_view,
                                      codec.max_decompressed_size,
+#if defined(CUDA_API_PER_THREAD_DEFAULT_STREAM)
+                                     (stream == rmm::cuda_stream_default) ?
+                                        rmm::cuda_stream_per_thread : stream);
+#else
                                      stream);
+#endif
         } else {
           gpu_unsnap(d_comp_in, d_comp_out, d_comp_stats_view, stream);
         }
