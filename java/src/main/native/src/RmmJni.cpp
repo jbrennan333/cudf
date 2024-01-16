@@ -31,6 +31,7 @@
 #include <rmm/mr/device/owning_wrapper.hpp>
 #include <rmm/mr/device/per_device_resource.hpp>
 #include <rmm/mr/device/pool_memory_resource.hpp>
+#include <rmm/mr/pinned_host_memory_resource.hpp>
 
 #include "cudf_jni_apis.hpp"
 
@@ -490,6 +491,27 @@ JNIEXPORT void JNICALL Java_ai_rapids_cudf_Rmm_releaseManagedMemoryResource(JNIE
   try {
     cudf::jni::auto_set_device(env);
     auto mr = reinterpret_cast<rmm::mr::managed_memory_resource *>(ptr);
+    delete mr;
+  }
+  CATCH_STD(env, )
+}
+
+JNIEXPORT jlong JNICALL Java_ai_rapids_cudf_Rmm_newPinnedHostMemoryResource(JNIEnv *env,
+                                                                         jclass clazz) {
+  try {
+    cudf::jni::auto_set_device(env);
+    auto ret = new rmm::mr::pinned_host_memory_resource();
+    return reinterpret_cast<jlong>(ret);
+  }
+  CATCH_STD(env, 0)
+}
+
+JNIEXPORT void JNICALL Java_ai_rapids_cudf_Rmm_releasePinnedHostMemoryResource(JNIEnv *env,
+                                                                            jclass clazz,
+                                                                            jlong ptr) {
+  try {
+    cudf::jni::auto_set_device(env);
+    auto mr = reinterpret_cast<rmm::mr::pinned_host_memory_resource *>(ptr);
     delete mr;
   }
   CATCH_STD(env, )

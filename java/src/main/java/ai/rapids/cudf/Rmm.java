@@ -539,6 +539,10 @@ public class Rmm {
 
   static native void releaseManagedMemoryResource(long handle);
 
+  static native long newPinnedHostMemoryResource() throws RmmException;
+
+  static native void releasePinnedHostMemoryResource(long handle);
+
   static native long newPoolMemoryResource(long childHandle,
       long initSize, long maxSize) throws RmmException;
 
